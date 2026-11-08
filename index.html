@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Beatrix Haddock — Screen Prints</title>
+  <meta name="description" content="Hand-drawn, hand-pulled screen printed shirts.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <h1>beatrixkeiko</h1>
+    <nav>
+      <a href="#fish">Pile of Fish</a>
+      <a href="#chief">Stawamus Chief</a>
+      <a href="#iron-horse">Iron Horse</a>
+      <!-- <a href="film.html">Photography</a> -->
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- To add a print: copy a <figure class="card"> block into the right
+         section and change the img src, alt and caption.
+         For extra photos you can click through to in the enlarged view,
+         add more <img hidden ... data-caption="..."> lines inside the
+         same card. The first (non-hidden) img is the one shown in the grid. -->
+
+    <section id="fish">
+      <h2>Pile of Fish</h2>
+      <div class="grid">
+        <figure class="card">
+          <img src="available_images/red_M.jpeg" alt="Drawn fish in black over a brick-red block, size M" loading="lazy">
+          <figcaption>Red Crop · M · $30</figcaption>
+        </figure>
+        <figure class="card">
+          <img src="available_images/red_S.jpeg" alt="Fish print, red, size S" loading="lazy">
+          <figcaption>Red Crop · S · $30</figcaption>
+        </figure>
+        <figure class="card">
+          <img src="available_images/green_M.jpeg" alt="Fish print, green, size M" loading="lazy">
+          <figcaption>Green Crop · M · $30</figcaption>
+        </figure>
+        <figure class="card">
+          <img src="available_images/brown_L_torso.jpeg" alt="Fish print, brown, size L, close-up" data-caption="Brown · L, detail" loading="lazy">
+          <img hidden src="available_images/brown_L_full_body.jpeg" alt="Fish print, brown, size L" data-caption="Brown · L" loading="lazy">
+        <figcaption>Brown Oversized· L · $30<span class="count">2 photos</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="chief">
+      <h2>Stawamus chief</h2>
+      <div class="grid">
+        <figure class="card">
+          <img src="available_images/cams.jpeg" data-caption="Front" loading="lazy">
+          <img hidden src="available_images/chief.jpeg" data-caption="Back" loading="lazy">
+          <figcaption>White Crop · M · $30<span class="count">2 photos</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="iron-horse">
+      <h2>Iron Horse Triple Crown</h2>
+      <div class="grid">
+        <figure class="card">
+          <img src="available_images/triple_crown_orange_blue.jpeg" data-caption="White · L" loading="lazy">
+          <img hidden src="available_images/white_large_1.jpeg" data-caption="Fit" loading="lazy">
+          <img hidden src="available_images/white_large_3.jpeg" data-caption="Fit" loading="lazy">
+          <img hidden src="available_images/white_large_2.jpeg" data-caption="Back" loading="lazy">
+          <figcaption>White · L · $10 <span class="count">4 photos</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; <span id="year"></span> Beatrix Haddock</p>
+  </footer>
+
+  <!-- Click any print to see it larger -->
+  <dialog class="lightbox" id="lightbox">
+    <div class="lb-stage">
+      <button class="lb-nav lb-prev" aria-label="Previous photo">&lsaquo;</button>
+      <img alt="">
+      <button class="lb-nav lb-next" aria-label="Next photo">&rsaquo;</button>
+    </div>
+    <p></p>
+  </dialog>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const lightbox = document.getElementById('lightbox');
+    const lbImg = lightbox.querySelector('img');
+    const lbCaption = lightbox.querySelector('p');
+    let photos = [];
+    let index = 0;
+
+    function show(i) {
+      index = (i + photos.length) % photos.length;
+      const img = photos[index];
+      lbImg.src = img.src;
+      lbImg.alt = img.alt;
+      const counter = photos.length > 1 ? `  (${index + 1} / ${photos.length})` : '';
+      const fallback = img.closest('.card').querySelector('figcaption').textContent;
+      lbCaption.textContent = (img.dataset.caption || fallback) + counter;
+    }
+
+    // Open: the grid image is the first photo; any hidden imgs in the same card follow
+    document.querySelectorAll('.card > img:not([hidden])').forEach(img => {
+      img.addEventListener('click', () => {
+        photos = [...img.closest('.card').querySelectorAll('img')];
+        lightbox.classList.toggle('single', photos.length < 2);
+        show(0);
+        lightbox.showModal();
+      });
+    });
+
+    // Click the photo or the arrows to go through; click outside to close (Esc also works)
+    lightbox.querySelector('.lb-prev').addEventListener('click', e => { e.stopPropagation(); show(index - 1); });
+    lightbox.querySelector('.lb-next').addEventListener('click', e => { e.stopPropagation(); show(index + 1); });
+    lbImg.addEventListener('click', e => {
+      e.stopPropagation();
+      if (photos.length > 1) show(index + 1); else lightbox.close();
+    });
+    lightbox.addEventListener('click', () => lightbox.close());
+
+    document.addEventListener('keydown', e => {
+      if (!lightbox.open || photos.length < 2) return;
+      if (e.key === 'ArrowRight') show(index + 1);
+      if (e.key === 'ArrowLeft') show(index - 1);
+    });
+  </script>
+</body>
+</html>
